@@ -43,6 +43,6 @@ func main() {
 		fmt.Printf("Number of Closed Bugs - %d \n", len(issues))
 		fmt.Printf("Total of Points - %d \n", int(totalPoints))
 		avaragePoints := totalPoints / float64(len(issues))
-		fmt.Printf("Avarage Points per Bug - %d \n", int(avaragePoints))
+		fmt.Printf("Avarage Points per Bug - %f \n", avaragePoints)
 	}
 }
