@@ -3,35 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/andygrunwald/go-jira"
-	"github.com/openshift/gmarkley-VI/jiraBugtool/functions"
+	"github.com/openshift/gmarkley-VI/jiraSosRepot/functions"
 	"log"
-	"strings"
 )
-
-func exportConsole(key string, output string) {
-	fmt.Printf("%s - %s\n", key, output)
-}
-func exportJira(client *jira.Client, id string, key string, output string) *jira.Comment {
-	com := jira.Comment{
-		ID:           id,
-		Self:         "",
-		Name:         "",
-		Author:       jira.User{},
-		Body:         output,
-		UpdateAuthor: jira.User{},
-		Updated:      "",
-		Created:      "",
-		Visibility:   jira.CommentVisibility{},
-	}
-	commentOUT, _, err := client.Issue.AddComment(key, &com)
-	if err != nil {
-		panic(err)
-	}
-	return commentOUT
-}
 
 func main() {
 	//Setup
+	totalPoints := 0.000000
 	jiraURL := "https://issues.redhat.com"
 	username, password := functions.ReadCredentials()
 	var jiraJQL [1][2]string
@@ -58,23 +36,13 @@ func main() {
 		}
 
 		for _, i := range issues {
-			options := &jira.GetQueryOptions{Expand: "renderedFields"}
-			u, _, err := client.Issue.Get(i.Key, options)
-			if err != nil {
-				fmt.Printf("\n==> error: %v\n", err)
-				return
-			}
-
-			if len(u.RenderedFields.Comments.Comments) >= 1 {
-				c := u.RenderedFields.Comments.Comments[len(u.RenderedFields.Comments.Comments)-1]
-				if strings.Contains(c.Updated, "days ago") {
-					commentString := fmt.Sprintf("%s Please comment/update - Last update was %+v", name, c.Updated)
-					exportConsole(i.Key, commentString)
-				}
-			} else {
-				commentString := fmt.Sprintf("%s Please add a comment.", name)
-				exportConsole(i.Key, commentString)
-			}
+			storyPoint := i.Fields.Unknowns["customfield_12310243"]
+			totalPoints += storyPoint.(float64)
 		}
+
+		fmt.Printf("Number of Closed Bugs - %d \n", len(issues))
+		fmt.Printf("Total of Points - %d \n", int(totalPoints))
+		avaragePoints := totalPoints / float64(len(issues))
+		fmt.Printf("Avarage Points per Bug - %d \n", int(avaragePoints))
 	}
 }
