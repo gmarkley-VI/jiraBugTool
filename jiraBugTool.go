@@ -12,8 +12,8 @@ func main() {
 	totalPoints := 0.000000
 	jiraURL := "https://issues.redhat.com"
 	username, password := functions.ReadCredentials()
-	var jiraJQL [1][2]string
-	jiraJQL[0][0] = "project = WINC AND (type = Bug and status = Done AND \"Story Points\" is not null )OR project = OCPBUGSM AND (component in (\"Windows Containers\") AND \"Story Points\" is not EMPTY )"
+	var jiraJQL [1]string
+	jiraJQL[0] = "project = WINC AND (type = Bug and status = Done AND \"Story Points\" is not null )OR project = OCPBUGSM AND (component in (\"Windows Containers\") AND \"Story Points\" is not EMPTY )"
 
 	//Create the client
 	client, _ := functions.CreatTheClient(username, password, jiraURL)
